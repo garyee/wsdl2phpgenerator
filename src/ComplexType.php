@@ -97,12 +97,21 @@ class ComplexType extends Type
         }
 
         if($this->config->get("classMaps")==true){
+            $name='classMap';
             $classMapArr=array();
             foreach ($this->members as  $var_name=>$detailArr ) {
                     $classMapArr[$var_name]=$detailArr->getType();
             }
-            $classMapvar = new PhpVariable('protected static','classMap', var_export($classMapArr, true));
+            $classMapvar = new PhpVariable('protected static',$name, var_export($classMapArr, true));
             $this->class->addVariable($classMapvar);
+
+
+            $getterComment = new PhpDocComment();
+            $getterComment->setReturn(PhpDocElementFactory::getReturn("string[]", ''));
+                $getterCode = '  return self::$' . $name . ';' . PHP_EOL;
+            $getter = new PhpFunction('public static', 'get' . ucfirst($name), '', $getterCode, $getterComment);
+            $accessors[] = $getter;
+
         }
 
         // Add member variables
@@ -134,14 +143,14 @@ class ComplexType extends Type
             $getterComment->setReturn(PhpDocElementFactory::getReturn($type, ''));
             if ($type == '\DateTime') {
                 $getterCode = '  if ($this->' . $name . ' == null) {' . PHP_EOL
-                    . '    return null;' . PHP_EOL
-                    . '  } else {' . PHP_EOL
-                    . '    try {' . PHP_EOL
-                    . '      return new \DateTime($this->' . $name . ');' . PHP_EOL
-                    . '    } catch (\Exception $e) {' . PHP_EOL
-                    . '      return false;' . PHP_EOL
-                    . '    }' . PHP_EOL
-                    . '  }' . PHP_EOL;
+                              . '    return null;' . PHP_EOL
+                              . '  } else {' . PHP_EOL
+                              . '    try {' . PHP_EOL
+                              . '      return new \DateTime($this->' . $name . ');' . PHP_EOL
+                              . '    } catch (\Exception $e) {' . PHP_EOL
+                              . '      return false;' . PHP_EOL
+                              . '    }' . PHP_EOL
+                              . '  }' . PHP_EOL;
             } else {
                 $getterCode = '  return $this->' . $name . ';' . PHP_EOL;
             }
@@ -154,10 +163,10 @@ class ComplexType extends Type
             if ($type == '\DateTime') {
                 if ($member->getNullable()) {
                     $setterCode = '  if ($' . $name . ' == null) {' . PHP_EOL
-                        . '   $this->' . $name . ' = null;' . PHP_EOL
-                        . '  } else {' . PHP_EOL
-                        . '    $this->' . $name . ' = $' . $name . '->format(\DateTime::ATOM);' . PHP_EOL
-                        . '  }' . PHP_EOL;
+                                  . '   $this->' . $name . ' = null;' . PHP_EOL
+                                  . '  } else {' . PHP_EOL
+                                  . '    $this->' . $name . ' = $' . $name . '->format(\DateTime::ATOM);' . PHP_EOL
+                                  . '  }' . PHP_EOL;
                 } else {
                     $setterCode = '  $this->' . $name . ' = $' . $name . '->format(\DateTime::ATOM);' . PHP_EOL;
                 }
