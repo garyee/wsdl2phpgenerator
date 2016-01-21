@@ -96,6 +96,15 @@ class ComplexType extends Type
             $constructorSource .= '  parent::__construct(' . $this->buildParametersString($constructorParameters, false) . ');' . PHP_EOL;
         }
 
+        if($this->config->get("classMaps")==true){
+            $classMapArr=array();
+            foreach ($this->members as  $var_name=>$detailArr ) {
+                    $classMapArr[$var_name]=$detailArr->getType();
+            }
+            $classMapvar = new PhpVariable('protected static','classMap', var_export($classMapArr, true));
+            $this->class->addVariable($classMapvar);
+        }
+
         // Add member variables
         foreach ($this->members as $member) {
             $type = Validator::validateType($member->getType());
