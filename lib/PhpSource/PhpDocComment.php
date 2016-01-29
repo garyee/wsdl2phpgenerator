@@ -223,4 +223,145 @@ class PhpDocComment
     {
         $this->description = $description;
     }
+
+    /**
+     * @return PhpDocElement
+     */
+    public function getAccess()
+    {
+        return $this->access;
+    }
+
+    /**
+     * @return array
+     */
+    public function getParams()
+    {
+        return $this->params;
+    }
+
+    /**
+     * @return PhpDocElement
+     */
+    public function getReturn()
+    {
+        return $this->return;
+    }
+
+    /**
+     * @return PhpDocElement
+     */
+    public function getPackage()
+    {
+        return $this->package;
+    }
+
+    /**
+     * @return PhpDocElement
+     */
+    public function getAuthor()
+    {
+        return $this->author;
+    }
+
+    /**
+     * @return PhpDocElement
+     */
+    public function getLicence()
+    {
+        return $this->licence;
+    }
+
+    /**
+     * @return array
+     */
+    public function getThrows()
+    {
+        return $this->throws;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * @return PhpDocElement
+     */
+    public function getVar(){
+        return $this->var;
+    }
+
+    public static function getFromString($str){
+        $commentObj = new PhpDocComment();
+        $desc="";
+        foreach(preg_split("/((\r?\n)|(\r\n?))/", $str) as $line){
+            $words=preg_split("/\s|\s+/", $line,-1,PREG_SPLIT_NO_EMPTY);
+            if(count($words)>1){
+                if($words[0]=="*"){
+                    if(preg_match("/(^@)/",$words[1])){
+                        $elemType=substr($words[1],1);
+                        switch($elemType){
+                            case"var":
+                                $commentObj->setVar(PhpDocElementFactory::getVar($words[2], substr($words[3],1), isset($words[4])?implode(" ",array_slice($words,4)):""));
+                                break;
+                            case"param":
+                                $commentObj->addParam(PhpDocElementFactory::getParam($words[2], substr($words[3],1), isset($words[4])?implode(" ",array_slice($words,4)):""));
+                                break;
+                            case"return":
+                                $commentObj->setReturn(PhpDocElementFactory::getReturn($words[2], isset($words[3])?implode(" ",array_slice($words,3)):""));
+                                break;
+                            case"licence":
+                                $commentObj->addParam(PhpDocElementFactory::getLicence(isset($words[2])?implode(" ",array_slice($words,2)):""));
+                                break;
+                            case"author":
+                                $commentObj->setAuthor(PhpDocElementFactory::getAuthor(isset($words[2])?implode(" ",array_slice($words,2)):""));
+                                break;
+                            case"throws":
+                                $commentObj->addThrows(PhpDocElementFactory::getThrows($words[2], isset($words[3])?implode(" ",array_slice($words,3)):""));
+                                break;
+                            case"package":
+                                $commentObj->setPackage(PhpDocElementFactory::getPackage(isset($words[2])?implode(" ",array_slice($words,2)):""));
+                                break;
+                            case"access":
+                                $commentObj->setAccess(PhpDocElementFactory::getAccess($words[2]));
+                                break;
+                            case"abstract":
+                            case"static":
+                            case"final":
+                            case"extends":
+                            case"deprecated":
+                            case"since":
+                            case"see":
+                            case"link":
+                            case"version":
+                            case"copyright":
+                            case"category":
+                            case"deprec":
+                            case"example":
+                            case"exception":
+                            case"global":
+                            case"ignore":
+                            case"internal":
+                            case"magic":
+                            case"see":
+                            case"staticvar":
+                            case"subpackage":
+                            case"todo":
+                            default:
+                                break;
+                        }
+                    }else
+                        $desc.=implode(" ",array_slice($words[1],1)).PHP_EOL;
+                }
+            }
+
+        }
+        $commentObj->setDescription($desc);
+        return $commentObj;
+}
+
 }
