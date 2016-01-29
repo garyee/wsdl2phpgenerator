@@ -45,25 +45,7 @@ class Enum extends Type
         if ($this->class != null) {
             throw new Exception("The class has already been generated");
         }
-        $classBaseType="";
-        $forcedBaseClassArr = $this->config->get("forceBaseClasses");
-        if (
-            isset($forcedBaseClassArr[$this->phpIdentifier])
-            && !empty($forcedBaseClassArr[$this->phpIdentifier])
-            && class_exists($forcedBaseClassArr[$this->phpIdentifier])
-        ) {
-            $classBaseType = $forcedBaseClassArr[$this->phpIdentifier];
-        } elseif (
-            isset($forcedBaseClassArr['*'])
-            && !empty($forcedBaseClassArr['*'])
-            && class_exists($forcedBaseClassArr['*'])
-        ) {
-            $classBaseType = $forcedBaseClassArr['*'];
-        }
 
-<<<<<<< HEAD
-        $this->class = new PhpClass($this->phpIdentifier, false, $classBaseType);
-=======
         $traits=$this->config->get("traits");
         $trait_details=$this->config->get("trait_details")[$this->phpIdentifier];
 
@@ -81,7 +63,6 @@ class Enum extends Type
         }
 
         $this->class = new PhpClass($this->phpIdentifier, false,'',$traits,$trait_details);
->>>>>>> traits
 
         $first = true;
 

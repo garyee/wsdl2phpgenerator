@@ -67,24 +67,6 @@ class ComplexType extends Type
 
         $classBaseType = $this->getBaseTypeClass();
 
-<<<<<<< HEAD
-        if(empty($classBaseType)) {
-            $forcedBaseClassArr = $this->config->get("forceBaseClasses");
-            if (
-                isset($forcedBaseClassArr[$this->phpIdentifier])
-                && !empty($forcedBaseClassArr[$this->phpIdentifier])
-                && class_exists($forcedBaseClassArr[$this->phpIdentifier])
-            ) {
-                $classBaseType = $forcedBaseClassArr[$this->phpIdentifier];
-            } elseif (
-                isset($forcedBaseClassArr['*'])
-                && !empty($forcedBaseClassArr['*'])
-                && class_exists($forcedBaseClassArr['*'])
-            ) {
-                $classBaseType = $forcedBaseClassArr['*'];
-            }
-        }
-=======
         $traits=$this->config->get("traits");
         $trait_details=$this->config->get("trait_details")[$this->phpIdentifier];
 
@@ -101,7 +83,6 @@ class ComplexType extends Type
             $trait_details=array();
         }
 
->>>>>>> traits
         $this->class = new PhpClass(
             $this->phpIdentifier,
             false,
@@ -134,14 +115,6 @@ class ComplexType extends Type
         }
 
         if($this->config->get("classMaps")==true){
-<<<<<<< HEAD
-            $classMapArr=array();
-            foreach ($this->members as  $var_name=>$detailArr ) {
-                    $classMapArr[$var_name]=$detailArr->getType();
-            }
-            $classMapvar = new PhpVariable('protected static','classMap', var_export($classMapArr, true));
-            $this->class->addVariable($classMapvar);
-=======
             $name='classMap';
             $classMapArr=array();
             foreach ($this->members as  $var_name=>$typeObj ) {
@@ -163,7 +136,6 @@ class ComplexType extends Type
             $getter = new PhpFunction('public static', 'get' . ucfirst($name), '', $getterCode, $getterComment);
             $accessors[] = $getter;
 
->>>>>>> traits
         }
 
         // Add member variables
